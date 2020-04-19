@@ -1,2 +1,0 @@
-# toDoListDraggable
-Created with CodeSandbox
