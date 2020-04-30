@@ -1,17 +1,15 @@
+import { addEventsDragAndDrop } from "./dragNDrop";
+
 const getElement = selector => {
   return document.querySelector(selector);
 };
 
-const showElement = selector => {
+const toggleVisibility = selector => {
   let ele = getElement(selector);
-  ele.classList.remove("hide");
-  ele.className += " show";
-};
-
-const hideElement = selector => {
-  let ele = getElement(selector);
-  ele.classList.remove("show");
-  ele.className += " hide";
+  let classToRemove = ele.classList.contains("hide") ? "hide" : "show";
+  let classToAdd = classToRemove === "hide" ? " show" : " hide";
+  ele.classList.remove(classToRemove);
+  ele.className += classToAdd;
 };
 
 const createCardComposerEle = () => {
@@ -19,30 +17,14 @@ const createCardComposerEle = () => {
     tagName: "div",
     classList: ["card-composer"]
   });
-  let btnRow = createNewElement({
-    tagName: "div",
-    classList: ["btn-row"]
-  });
-  let inputEle = createNewElement({
-    tagName: "textarea",
-    attrList: [
-      { name: "autofocus", val: true },
-      { name: "placeholder", val: "Add card title here" }
-    ]
-  });
-  let saveBtn = createNewElement({
-    tagName: "button",
-    classList: ["save-btn"],
-    html: "Save card"
-  });
-  let cancelBtn = createNewElement({
-    tagName: "button",
-    classList: ["cancel-btn", "fa", "fa-times"]
-  });
-  btnRow.appendChild(saveBtn);
-  btnRow.appendChild(cancelBtn);
-  cardComposer.appendChild(inputEle);
-  cardComposer.appendChild(btnRow);
+
+  cardComposer.innerHTML = `
+  <textarea placeholder='Add card title' autofocus></textarea>
+    <div class='btn-row'>
+    <button class='save-btn'>Save card</button>
+    <button class='cancel-btn fa fa-times'></button>
+  </div>
+  `;
   return cardComposer;
 };
 
@@ -74,75 +56,17 @@ const createListItemComponent = (label, id) => {
     attrList: [
       { name: "draggable", val: true },
       { name: "id", val: `item${id}` }
-    ],
-    html: label
+    ]
   });
-  let btn = createNewElement({
-    tagName: "a",
-    classList: ["fa", "fa-minus", "delete-btn"],
-    attrList: [{ name: "id", val: id }]
-  });
-  listItem.appendChild(btn);
+  listItem.innerHTML = `<label>${label}</label><a class='fa fa-minus delete-btn' id=${id}> </a>`;
   addEventsDragAndDrop(listItem);
   return listItem;
 };
 
-var dragSrcEl;
-//Drag and drop methods
-function dragStart(e) {
-  this.style.opacity = "0.4";
-  let label = this.innerHTML;
-  dragSrcEl = this;
-  e.dataTransfer.effectAllowed = "move";
-  e.dataTransfer.setData("text/html", label);
-}
-
-function dragEnter(e) {
-  this.classList.add("over");
-}
-
-function dragLeave(e) {
-  e.stopPropagation();
-  this.classList.remove("over");
-}
-
-function dragOver(e) {
-  e.preventDefault();
-  e.dataTransfer.dropEffect = "move";
-  return false;
-}
-
-function dragDrop(e) {
-  if (dragSrcEl !== this) {
-    dragSrcEl.innerHTML = this.innerHTML;
-    this.innerHTML = e.dataTransfer.getData("text/html");
-  }
-  return false;
-}
-
-function dragEnd(e) {
-  var listItems = document.querySelectorAll(".list-item");
-  listItems.forEach(item => {
-    item.classList.remove("over");
-  });
-  this.style.opacity = "1";
-}
-
-const addEventsDragAndDrop = el => {
-  el.addEventListener("dragstart", dragStart, false);
-  el.addEventListener("dragenter", dragEnter, false);
-  el.addEventListener("dragover", dragOver, false);
-  el.addEventListener("dragleave", dragLeave, false);
-  el.addEventListener("drop", dragDrop, false);
-  el.addEventListener("dragend", dragEnd, false);
-};
-
 export {
   getElement,
-  showElement,
-  hideElement,
+  toggleVisibility,
   createCardComposerEle,
-  addEventsDragAndDrop,
   createNewElement,
   removeElement,
   createListItemComponent

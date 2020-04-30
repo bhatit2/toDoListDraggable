@@ -1,8 +1,7 @@
 import "../css/styles.css";
 import {
   getElement,
-  showElement,
-  hideElement,
+  toggleVisibility,
   createCardComposerEle,
   createListItemComponent,
   removeElement
@@ -10,7 +9,7 @@ import {
 
 const showCardComposer = () => {
   let parent = getElement("#list");
-  hideElement("#add-btn");
+  toggleVisibility("#add-btn");
   let cardComposer = createCardComposerEle();
   parent.appendChild(cardComposer);
 };
@@ -22,13 +21,15 @@ const handleListActions = e => {
   }
   if (e.target && e.target.matches("button.cancel-btn")) {
     removeElement(parent, ".card-composer");
-    toggleAddCard();
+    toggleVisibility("#add-btn");
   }
   if (e.target && e.target.matches("a.delete-btn")) {
     deleteListItem(e);
   }
   if (e.target && e.target.matches("a.clear-btn")) {
-    let confirmation = confirm("Are you sure you want to clear the list");
+    let confirmation = window.confirm(
+      "Are you sure you want to clear the list"
+    );
     if (confirmation) {
       clearList();
     }
@@ -64,16 +65,10 @@ const addListItem = e => {
     removeElement(parent, ".card-composer");
     let ele = createListItem(title);
     parent.appendChild(ele);
-    toggleAddCard();
+    toggleVisibility("#add-btn");
   } else {
     alert("Card title cannot be empty");
   }
-};
-
-const toggleAddCard = () => {
-  let sel = "#add-btn";
-  let addBtn = getElement(sel);
-  addBtn.className === "show" ? hideElement(sel) : showElement(sel);
 };
 
 const createListItem = html => {
